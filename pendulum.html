@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Pendulums with Matter.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const Engine = Matter.Engine,
+            Render = Matter.Render,
+            World = Matter.World,
+            Bodies = Matter.Bodies,
+            Constraint = Matter.Constraint,
+            Mouse = Matter.Mouse,
+            MouseConstraint = Matter.MouseConstraint;
+
+        const engine = Engine.create();
+        const render = Render.create({
+            element: document.body,
+            engine: engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false
+            }
+        });
+
+        // Create first fulcrum and pendulum bob with a longer string
+        const fulcrum1 = Bodies.circle(window.innerWidth / 2 - 30, 100, 10, {
+            isStatic: true,
+            render: {
+                fillStyle: '#3498db'
+            }
+        });
+
+        const pendulumBob1 = Bodies.circle(window.innerWidth / 2 - 100, 300, 30, {
+            render: {
+                fillStyle: '#e74c3c'
+            }
+        });
+
+        const constraint1 = Constraint.create({
+            bodyA: fulcrum1,
+            pointA: { x: 0, y: 0 },
+            bodyB: pendulumBob1,
+            pointB: { x: 0, y: 0 },
+            stiffness: 0.5,
+            length: 200 // Longer string
+        });
+
+        // Create second fulcrum and pendulum bob with a longer string
+        const fulcrum2 = Bodies.circle(window.innerWidth / 2 + 30, 100, 10, {
+            isStatic: true,
+            render: {
+                fillStyle: '#3498db'
+            }
+        });
+
+        const pendulumBob2 = Bodies.circle(window.innerWidth / 2 + 100, 300, 30, {
+            render: {
+                fillStyle: '#e74c3c'
+            }
+        });
+
+        const constraint2 = Constraint.create({
+            bodyA: fulcrum2,
+            pointA: { x: 0, y: 0 },
+            bodyB: pendulumBob2,
+            pointB: { x: 0, y: 0 },
+            stiffness: 0.5,
+            length: 200 // Longer string
+        });
+
+        const mouse = Mouse.create(render.canvas);
+        const mouseConstraint = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: {
+                stiffness: 0.2,
+                render: {
+                    visible: false
+                }
+            }
+        });
+
+        World.add(engine.world, [fulcrum1, pendulumBob1, constraint1, fulcrum2, pendulumBob2, constraint2, mouseConstraint]);
+
+        Engine.run(engine);
+        Render.run(render);
+    </script>
+</body>
+
+</html>
